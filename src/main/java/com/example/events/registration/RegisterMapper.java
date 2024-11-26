@@ -41,6 +41,8 @@ public class RegisterMapper {
                 .firstName(registerEvent.getUser().getFirstName())
                 .lastName(registerEvent.getUser().getLastName())
                 .email(registerEvent.getUser().getEmail())
+                .regDate(registerEvent.getRegDate())
+                .regTime(registerEvent.getRegTime())
                 .build();
     }
 
