@@ -57,7 +57,7 @@ public class AuthServiceImpl implements  AuthService{
         user.setFirstName(signUpRequest.getFirstName());
         user.setLastName(signUpRequest.getLastName());
 //        user.setPhone("+254"+signUpRequest.getPhone());
-        user.setPhone(signUpRequest.getEmail());
+        user.setPhone(signUpRequest.getPhone());
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(new BCryptPasswordEncoder().encode(signUpRequest.getPassword()));
         user.setRole(Role.ATTENDEE);
