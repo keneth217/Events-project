@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: events-application
+  server:
+    port: 9091
+  datasource:
+    url: jdbc:postgresql://localhost:5432/events?createDatabaseIfNotExist=true
+    username: keneth
+    password: korir
+  jpa:
+    database: POSTGRESQL
+    show-sql: true  # Use `show-sql` instead of `show`
+    hibernate:
+      ddl-auto: update
+      database-platform: org.hibernate.dialect.PostgresSQLDialect
+
