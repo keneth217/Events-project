@@ -1,6 +1,5 @@
 package com.example.events.event;
 
-import com.example.events.category.EventCategory;
 import lombok.Builder;
 import lombok.Data;
 
