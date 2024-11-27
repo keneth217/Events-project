@@ -12,12 +12,13 @@ import java.util.UUID;
 public class EventResponse {
     private UUID eventId;
     private String eventName;
-    private String Location;
+    private String location;
     private String description;
-    private EventCategory category;
+    private UUID categoryId;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalTime startTime;
     private LocalTime endTime;
     private EventStatus status;
+    private int soldOUt;
 }
