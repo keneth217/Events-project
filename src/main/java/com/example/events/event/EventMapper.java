@@ -10,16 +10,12 @@ public class EventMapper {
                 .eventId(event.getId())
                 .eventName(event.getEventName())
                 .description(event.getDescription())
-                .category(event.getCategory() != null ? EventCategory.builder()
-                        .id(event.getCategory().getId())
-                        .categoryName(event.getCategory().getCategoryName())
-                        .categoryDescription(event.getCategory().getCategoryDescription())
-                        .build() : null)
+                .categoryId(event.getCategory().getId())
                 .startDate(event.getStartDate())
                 .endDate(event.getEndDate())
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
-                .Location(event.getLocation())
+                .location(event.getLocation())
                 .status(event.getStatus())
                 .build();
     }
