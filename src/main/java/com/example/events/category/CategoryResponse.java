@@ -15,8 +15,5 @@ public class CategoryResponse {
     private UUID id;
     private String categoryName;
     private String categoryDescription;
-
-
-
     private List<EventResponse> events;
 }
