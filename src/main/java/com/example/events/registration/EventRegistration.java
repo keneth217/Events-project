@@ -24,6 +24,15 @@ public class EventRegistration {
     private UUID registrationId;
     private LocalDate regDate;
     private LocalTime regTime;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean scanned;
+    private String transactionId;
+    private String ticketQuantity;
+
+
+    @Column(name = "unique_code", length = 1000)  // Ensure the length is set to 500
+    private String uniqueCode;
+
     @Enumerated(EnumType.STRING)
     private RegStatus status;
     @ManyToOne
