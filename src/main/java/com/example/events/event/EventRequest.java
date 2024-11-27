@@ -18,4 +18,5 @@ public class EventRequest {
     private LocalDate endDate;
     private LocalTime startTime;
     private LocalTime endTime;
+    private int soldOUt;
 }
