@@ -1,13 +1,12 @@
 package com.example.events.configs;
 
-import com.example.events.configs.RateLimitingFilter;
+
 import com.example.events.exceptions.RateLimitExceededException;
-import io.github.bucket4j.Bucket;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+
 
 @Service
 public class RateLimitingService {
