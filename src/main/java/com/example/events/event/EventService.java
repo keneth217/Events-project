@@ -6,6 +6,7 @@ import com.example.events.exceptions.EventNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,6 +31,9 @@ public class EventService {
                 .startTime(eventRequest.getStartTime())
                 .category(category) // Assign the retrieved category object
                 .endDate(eventRequest.getEndDate())
+                .soldOUt(eventRequest.getSoldOUt())
+                .eventType(MyEventType.FREE_EVENT)
+                .status(EventStatus.ONGOING)
                 .location(eventRequest.getLocation())
                 .build();
 
@@ -79,7 +83,7 @@ public class EventService {
         event.setStartTime(eventRequest.getStartTime());
         event.setEndTime(eventRequest.getEndTime());
         event.setLocation(eventRequest.getLocation());
-        event.setStatus(EventStatus.ONGOING);
+
 
         // If category is present in the request, update it as well
         if (eventRequest.getCategoryId() != null) {
@@ -96,4 +100,17 @@ public class EventService {
     }
 
 
+//    public List<EventResponse> filterEventByDateLocationCategory(LocalDate startDate, String location, String category) {
+//        List<MyEvent> events = eventRepository.findAllByStartDateAndLocationAndCategory(startDate, location, category);
+//        return events.stream()
+//                .map(mapper::toEvent)
+//                .collect(Collectors.toList());
+//    }
+
+    public List<EventResponse> filterEventByDateBetween(LocalDate startDate, LocalDate endDate) {
+        List<MyEvent> events = eventRepository.findByStartDateBetween(startDate, endDate);
+        return events.stream()
+                .map(mapper::toEvent)
+                .collect(Collectors.toList());
+    }
 }
