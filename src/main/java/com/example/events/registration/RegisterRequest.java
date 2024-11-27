@@ -17,4 +17,7 @@ public class RegisterRequest {
     private LocalTime regTime;
     private UUID userId;
     private UUID eventId;
+    private boolean scanned;
+    private String transactionId;
+    private String ticketQuantity;
 }
