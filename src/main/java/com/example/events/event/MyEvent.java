@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -24,17 +25,30 @@ public class MyEvent {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String eventName;
+
     private String location;
     private String description;
-
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int totalAttendants;
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int soldOUt;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalTime startTime;
     private LocalTime endTime;
+    private String creatorName;
+    private BigDecimal eventCost;
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int attendants;
+    private BigDecimal amountToPay;
     @Enumerated(EnumType.STRING)
     private EventStatus status;
+    @Enumerated(EnumType.STRING)
+    private MyEventType eventType;
 
-    @ManyToOne
+
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private EventCategory category;
 
