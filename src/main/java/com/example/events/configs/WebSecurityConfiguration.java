@@ -37,8 +37,8 @@ public class WebSecurityConfiguration {
 //                        .requestMatchers("api/auth/**","swagger-ui/index.html#/**","api/admin/**","api/customer/**").permitAll()
                         .requestMatchers("api/auth/**").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-//                        .requestMatchers("api/admin/").hasAnyAuthority(Role.ADMIN.name())
-                        .requestMatchers("api/customer/").hasAnyAuthority(Role.ATTENDEE.name())
+                        .requestMatchers("api/admin/**").hasAnyAuthority(Role.ADMIN.name())
+                        .requestMatchers("api/attendant/**").hasAnyAuthority(Role.ATTENDEE.name())
                         .anyRequest().authenticated())
                 .sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
@@ -52,7 +52,6 @@ public class WebSecurityConfiguration {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
-            "api/v1/admin/**",
             "/swagger-ui.html"
     };
     @Bean
