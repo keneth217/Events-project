@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -19,5 +20,9 @@ public class RegisterRequest {
     private UUID eventId;
     private boolean scanned;
     private String transactionId;
-    private String ticketQuantity;
+    private Long ticketQuantity;
+
+    private BigDecimal paidAmount;
+    private BigDecimal eventCost;
+    private BigDecimal remainingAmount;
 }

@@ -96,6 +96,7 @@ public class RegisterService {
                 throw new EventSoldOutException("The event is sold out. No more registrations are allowed.");
             }
         }
+        BigDecimal cost = event.getEventCost().multiply(BigDecimal.valueOf(request.getTicketQuantity()));
 
         // Create a new EventRegistration (without the QR code yet)
         EventRegistration eventRegistration = EventRegistration.builder()
@@ -103,6 +104,10 @@ public class RegisterService {
                 .regTime(request.getRegTime())
                 .user(loggedInUser)
                 .event(event)
+                .ticketQuantity(request.getTicketQuantity())
+                .paidAmount(BigDecimal.valueOf(0.0))
+                .eventCost(cost)
+
                 .transactionId(UUID.randomUUID().toString()) // Generate a unique transaction ID
                 .ticketQuantity(request.getTicketQuantity())
                 .scanned(false) // Initial value, will be marked true upon scan
@@ -112,10 +117,12 @@ public class RegisterService {
         // Save the event registration to generate a registration ID
         EventRegistration registeredEvent = registrationRepository.save(eventRegistration);
 
-        // Now that the registration is saved, generate QR code content with the registration ID
-        String qrCodeContent = "Registration ID: " + registeredEvent.getRegistrationId() + ", " +
-                "User: " + loggedInUser.getFirstName() + ", " +
-                "Event: " + event.getEventName();
+        // Now that the registration is saved, generate QR code content with numbering and line breaks
+        String qrCodeContent = "1. Registration ID: " + registeredEvent.getRegistrationId() + "\n" +
+                "2. User: " + loggedInUser.getFirstName()+"," +" Tickets: " + request.getTicketQuantity()+ "\n" +
+                "3. Paid: " + request.getPaidAmount()+ "\n" +
+                "4. Event: " + event.getEventName();
+
 
         // Generate QR code as a Base64 string
         String qrCodeBase64 = registermapper.generateQRCodeAsBase64(qrCodeContent, 300, 300);
