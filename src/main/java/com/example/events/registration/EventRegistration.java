@@ -28,6 +28,7 @@ public class EventRegistration {
     private boolean scanned;
     private String transactionId;
     private String ticketQuantity;
+    private Long ticketCount;
 
 
     @Column(name = "unique_code", length = 1000)  // Ensure the length is set to 500
