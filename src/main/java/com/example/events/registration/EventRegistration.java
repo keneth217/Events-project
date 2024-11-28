@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -27,9 +28,11 @@ public class EventRegistration {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean scanned;
     private String transactionId;
-    private String ticketQuantity;
+    private Long ticketQuantity;
     private Long ticketCount;
-
+    private BigDecimal paidAmount;
+    private BigDecimal eventCost;
+    private BigDecimal remainingAmount;
 
     @Column(name = "unique_code", length = 1000)  // Ensure the length is set to 500
     private String uniqueCode;
