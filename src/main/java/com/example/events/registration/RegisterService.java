@@ -132,10 +132,6 @@ public class RegisterService {
     }
 
 
-
-
-
-
     public AttendeesResponse getAllAttendeesForEvent(UUID eventId) {
         // Fetch event by ID
         MyEvent event = eventRepository.findById(eventId)
@@ -176,19 +172,14 @@ public class RegisterService {
     }
 
 
-
-
-
-
-
     public ResponseDto processQRCodeScan(UUID registrationId) {
         // Find the registration by ID
         EventRegistration registration = registrationRepository.findById(registrationId)
                 .orElseThrow(() -> new EventNotFoundException("No registration found for the provided QR code."));
-String name=registration.getUser().getFirstName();
+        String name = registration.getUser().getFirstName();
         // Check if already scanned
         if (registration.isScanned()) {
-            throw new EventAlreadyScannedException("Hey !! "+ name +", Your QR code has already been scanned.");
+            throw new EventAlreadyScannedException("Hey !! " + name + ", Your QR code has already been scanned.");
         }
 
         // Mark as scanned
