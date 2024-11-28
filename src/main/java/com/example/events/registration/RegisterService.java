@@ -1,6 +1,7 @@
 package com.example.events.registration;
 
 import com.example.events.category.EventCategory;
+import com.example.events.dto.ResponseDto;
 import com.example.events.emails.EmailDetails;
 import com.example.events.emails.EmailService;
 import com.example.events.event.EventRepository;
@@ -96,17 +97,7 @@ public class RegisterService {
             }
         }
 
-        // Generate QR code content
-        String qrCodeContent = "User: " + loggedInUser.getFirstName() + ", " +
-                "Event: " + event.getEventName();
-
-        // Generate QR code as a Base64 string
-        String qrCodeBase64 = registermapper.generateQRCodeAsBase64(qrCodeContent, 300, 300);
-
-        // Send email with embedded QR code
-        registermapper.sendEmailAlertWithAttachmentQRCode(loggedInUser.getEmail(), event, qrCodeBase64);
-
-        // Create a new EventRegistration
+        // Create a new EventRegistration (without the QR code yet)
         EventRegistration eventRegistration = EventRegistration.builder()
                 .regDate(request.getRegDate())
                 .regTime(request.getRegTime())
@@ -115,16 +106,31 @@ public class RegisterService {
                 .transactionId(UUID.randomUUID().toString()) // Generate a unique transaction ID
                 .ticketQuantity(request.getTicketQuantity())
                 .scanned(false) // Initial value, will be marked true upon scan
-                .uniqueCode(qrCodeBase64)
                 .status(RegStatus.PENDING)
                 .build();
 
-        // Save the event registration
+        // Save the event registration to generate a registration ID
         EventRegistration registeredEvent = registrationRepository.save(eventRegistration);
+
+        // Now that the registration is saved, generate QR code content with the registration ID
+        String qrCodeContent = "Registration ID: " + registeredEvent.getRegistrationId() + ", " +
+                "User: " + loggedInUser.getFirstName() + ", " +
+                "Event: " + event.getEventName();
+
+        // Generate QR code as a Base64 string
+        String qrCodeBase64 = registermapper.generateQRCodeAsBase64(qrCodeContent, 300, 300);
+
+        // Send email with the embedded QR code (with registration ID)
+        registermapper.sendEmailAlertWithAttachmentQRCode(loggedInUser.getEmail(), event, qrCodeBase64);
+
+        // Update the EventRegistration with the QR code (Base64 string)
+        registeredEvent.setUniqueCode(qrCodeBase64);
+        registrationRepository.save(registeredEvent); // Save with updated QR code
 
         // Convert to response and return
         return registermapper.toRegister(registeredEvent);
     }
+
 
 
 
@@ -175,25 +181,24 @@ public class RegisterService {
 
 
 
-    public void scanQRCode(String qrCodeContent) {
-        // Fetch the event registration based on the QR code content (uniqueCode)
-        EventRegistration registration = registrationRepository.findByUniqueCode(qrCodeContent)
+    public ResponseDto processQRCodeScan(UUID registrationId) {
+        // Find the registration by ID
+        EventRegistration registration = registrationRepository.findById(registrationId)
                 .orElseThrow(() -> new EventNotFoundException("No registration found for the provided QR code."));
-
-        // If the QR code is already scanned, return or throw an exception if necessary
+String name=registration.getUser().getFirstName();
+        // Check if already scanned
         if (registration.isScanned()) {
-            throw new EventAlreadyScannedException("This QR code has already been scanned.");
+            throw new EventAlreadyScannedException("Hey !! "+ name +", Your QR code has already been scanned.");
         }
 
-        // Update the scanned status to true
+        // Mark as scanned
         registration.setScanned(true);
-
-        // Save the updated registration status
+        registration.setStatus(RegStatus.PUBLISHED);
         registrationRepository.save(registration);
 
-        // Optionally, you can add a success message or any other relevant logic
-        System.out.println("QR code scanned successfully, registration updated.");
+        // Return a structured response using ResponseDto
+        String message = "QR code scanned successfully. Registration ID " + registrationId + " marked as scanned.";
+        return new ResponseDto("200", message);  // "200" is a placeholder for success status code
     }
-
 
 }
