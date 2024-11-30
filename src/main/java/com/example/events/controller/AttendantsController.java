@@ -6,6 +6,7 @@ import com.example.events.event.EventService;
 import com.example.events.registration.RegisterRequest;
 import com.example.events.registration.RegisterResponse;
 import com.example.events.registration.RegisterService;
+import com.example.events.registration.TicketResponse;
 import com.example.events.user.MyRegisteredEventsResponse;
 import com.example.events.user.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,11 +35,9 @@ public class AttendantsController {
 
 
     @PostMapping
-    public ResponseEntity<RegisterResponse> registerEvent(@RequestBody RegisterRequest request){
+    public ResponseEntity<TicketResponse> registerEvent(@RequestBody RegisterRequest request){
         return ResponseEntity.ok(registerService.registerForEvent(request));
     }
-
-
     @GetMapping
     public ResponseEntity<List<EventResponse>> getAllEvents(HttpServletRequest request) {
 
