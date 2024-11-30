@@ -4,6 +4,7 @@ import com.example.events.category.EventCategory;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -20,5 +21,8 @@ public class EventResponse {
     private LocalTime startTime;
     private LocalTime endTime;
     private EventStatus status;
+
+    private String creatorName;
+    private BigDecimal eventCost;
     private int soldOUt;
 }
