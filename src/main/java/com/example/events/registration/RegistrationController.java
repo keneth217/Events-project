@@ -21,13 +21,24 @@ public class RegistrationController {
     private final RegisterService registerService;
 
     @PostMapping
-    public ResponseEntity<RegisterResponse> registerEvent(@RequestBody RegisterRequest request){
+    public ResponseEntity<TicketResponse> registerEvent(@RequestBody RegisterRequest request){
         return ResponseEntity.ok(registerService.registerForEvent(request));
     }
 
     @GetMapping("/{eventId}")
     public ResponseEntity <AttendeesResponse> eventAttendees(@PathVariable UUID eventId) {
        AttendeesResponse attendants = registerService.getAllAttendeesForEvent(eventId);
+        if (attendants == null ) {
+            // Return 204 No Content for an empty list
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(attendants);
+    }
+
+
+    @GetMapping("/ticket/{ticketId}")
+    public ResponseEntity <TicketResponse> getTicketDetails(@PathVariable UUID ticketId) {
+        TicketResponse attendants = registerService.getTicketDetails(ticketId);
         if (attendants == null ) {
             // Return 204 No Content for an empty list
             return ResponseEntity.noContent().build();

@@ -107,6 +107,18 @@ public class RegisterMapper {
                 .build();
     }
 
+    public TicketResponse mapToTicketResponse(EventRegistration registerEvent) {
+        return TicketResponse.builder()
+                .eventName(registerEvent.getEvent().getEventName())
+                .userName(registerEvent.getUser().getFirstName())
+                .paidAmount(registerEvent.getPaidAmount())
+                .scanned(registerEvent.isScanned())
+                .regDate(registerEvent.getRegDate())
+                .eventCost(registerEvent.getEventCost())
+                .ticketId(registerEvent.getRegistrationId())
+                .build();
+    }
+
 
     // Convert a list of EventRegistration to a list of EventResponse
     public List<EventResponse> toEventResponses(List<EventRegistration> eventRegistrations) {
