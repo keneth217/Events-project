@@ -68,7 +68,7 @@ public class RegisterService {
         return getLoggedInUser(); // Directly return the logged-in user
     }
 
-    public RegisterResponse registerForEvent(RegisterRequest request) {
+    public TicketResponse registerForEvent(RegisterRequest request) {
         // Get the logged-in user
         User loggedInUser = getLoggedInUser();
 
@@ -135,10 +135,8 @@ public class RegisterService {
         registrationRepository.save(registeredEvent); // Save with updated QR code
 
         // Convert to response and return
-        return registermapper.toRegister(registeredEvent);
+        return registermapper.mapToTicketResponse(registeredEvent);
     }
-
-
     public AttendeesResponse getAllAttendeesForEvent(UUID eventId) {
         // Fetch event by ID
         MyEvent event = eventRepository.findById(eventId)
@@ -199,4 +197,9 @@ public class RegisterService {
         return new ResponseDto("200", message);  // "200" is a placeholder for success status code
     }
 
+    public TicketResponse getTicketDetails(UUID ticketId) {
+        EventRegistration registration = registrationRepository.findById(ticketId)
+                .orElseThrow(() -> new EventNotFoundException("Ticket not found for the given Event."));
+        return registermapper.mapToTicketResponse(registration);
+    }
 }
