@@ -3,6 +3,7 @@ package com.example.events.event;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -19,4 +20,6 @@ public class EventRequest {
     private LocalTime startTime;
     private LocalTime endTime;
     private int soldOUt;
+    private String creatorName;
+    private BigDecimal eventCost;
 }
