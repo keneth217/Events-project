@@ -15,6 +15,8 @@ public class EventMapper {
                 .endDate(event.getEndDate())
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
+                .creatorName(event.getCreatorName())
+                .eventCost(event.getEventCost())
                 .location(event.getLocation())
                 .status(event.getStatus())
                 .build();
