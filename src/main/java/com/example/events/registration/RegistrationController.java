@@ -38,12 +38,12 @@ public class RegistrationController {
 
     @GetMapping("/ticket/{ticketId}")
     public ResponseEntity <TicketResponse> getTicketDetails(@PathVariable UUID ticketId) {
-        TicketResponse attendants = registerService.getTicketDetails(ticketId);
-        if (attendants == null ) {
+        TicketResponse ticketDetails = registerService.getTicketDetails(ticketId);
+        if (ticketDetails == null ) {
             // Return 204 No Content for an empty list
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(attendants);
+        return ResponseEntity.ok(ticketDetails);
     }
 
     @GetMapping("/events")
