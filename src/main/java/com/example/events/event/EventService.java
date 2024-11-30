@@ -3,7 +3,10 @@ package com.example.events.event;
 import com.example.events.category.CategoryRepository;
 import com.example.events.category.EventCategory;
 import com.example.events.exceptions.EventNotFoundException;
+import com.example.events.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,7 +20,20 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EventMapper mapper;
     private final CategoryRepository categoryRepository;
+
+    // Utility method to get the logged-in user's details (shopId, shopCode, username) from token
+    public User getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (User) authentication.getPrincipal(); // Assuming your `User` implements `UserDetails`
+    }
+
+    ///get  details of the logged-in user
+    public User getLoggedInUserDetails() {
+        return getLoggedInUser(); // Directly return the logged-in user
+    }
     public EventResponse createEvent(EventRequest eventRequest) {
+
+        User loggedInUser = getLoggedInUser();
         // Retrieve the category by ID
         EventCategory category = categoryRepository.findById(eventRequest.getCategoryId())
                 .orElseThrow(() -> new EventNotFoundException("Invalid category ID: " + eventRequest.getCategoryId()));
@@ -33,6 +49,8 @@ public class EventService {
                 .endDate(eventRequest.getEndDate())
                 .soldOUt(eventRequest.getSoldOUt())
                 .eventType(MyEventType.FREE_EVENT)
+                .eventCost(eventRequest.getEventCost())
+                .creatorName(loggedInUser.getFirstName())
                 .status(EventStatus.ONGOING)
                 .location(eventRequest.getLocation())
                 .build();
