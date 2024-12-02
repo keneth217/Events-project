@@ -35,7 +35,7 @@ public class AttendantsController {
 
 
     @PostMapping
-    public ResponseEntity<TicketResponse> registerEvent(@RequestBody RegisterRequest request){
+    public ResponseEntity<TicketResponse> registerEvent(@RequestBody RegisterRequest request) throws Exception {
         return ResponseEntity.ok(registerService.registerForEvent(request));
     }
     @GetMapping
