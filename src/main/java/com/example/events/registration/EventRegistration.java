@@ -1,16 +1,16 @@
 package com.example.events.registration;
 
-
-
 import com.example.events.event.MyEvent;
+import com.example.events.payments.Payment;
+import com.example.events.payments.PaymentStatus;
 import com.example.events.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -20,13 +20,17 @@ import java.util.UUID;
 @Entity
 @Builder
 public class EventRegistration {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID registrationId;
+
     private LocalDate regDate;
     private LocalTime regTime;
+
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean scanned;
+
     private String transactionId;
     private Long ticketQuantity;
     private Long ticketCount;
@@ -34,18 +38,23 @@ public class EventRegistration {
     private BigDecimal eventCost;
     private BigDecimal remainingAmount;
 
-    @Column(name = "unique_code", length = 1000)  // Ensure the length is set to 500
+    @Column(name = "unique_code", length = 1000)  // Unique code for this registration
     private String uniqueCode;
 
     @Enumerated(EnumType.STRING)
     private RegStatus status;
-    @ManyToOne
-   // @MapsId("userId")  // Maps to the "userId" of the composite key
-    @JoinColumn(name = "user_id")
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)  // LAZY to avoid loading unnecessary data
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    //@MapsId("eventId")  // Maps to the "eventId" of the composite key
-    @JoinColumn(name = "events_id")
+    @ManyToOne(fetch = FetchType.LAZY)  // LAZY fetch type for optimization
+    @JoinColumn(name = "event_id", nullable = false)
     private MyEvent event;
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;  // Payments associated with this registration
 }
