@@ -52,6 +52,7 @@ public class WebSecurityConfiguration {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
+            "api/v1/paystack/**",
             "/swagger-ui.html"
     };
     @Bean
