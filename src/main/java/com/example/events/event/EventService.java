@@ -8,8 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,6 +41,21 @@ public class EventService {
         EventCategory category = categoryRepository.findById(eventRequest.getCategoryId())
                 .orElseThrow(() -> new EventNotFoundException("Invalid category ID: " + eventRequest.getCategoryId()));
 
+        // Validate event name
+        if (eventRequest.getEventName() == null || eventRequest.getEventName().isEmpty()) {
+            throw new EventNotFoundException("Event name is required");
+        }
+
+        byte[] eventImage = null;  // For storing the image bytes
+        if (eventRequest.getEventImage() != null && !eventRequest.getEventImage().isEmpty()) {
+            // Process the uploaded image if it's not empty
+            try {
+                eventImage = eventRequest.getEventImage().getBytes();  // Convert the image file to byte array
+            } catch (IOException e) {
+                throw new EventNotFoundException("Error processing uploaded image file");
+            }
+        }
+
         // Build the event object with the retrieved category
         MyEvent event = MyEvent.builder()
                 .eventName(eventRequest.getEventName())
@@ -47,10 +65,11 @@ public class EventService {
                 .startTime(eventRequest.getStartTime())
                 .category(category) // Assign the retrieved category object
                 .endDate(eventRequest.getEndDate())
+                .eventImage(eventImage)  // Store the image as a byte array
                 .soldOUt(eventRequest.getSoldOUt())
+                .creatorName(loggedInUser.getFirstName())
                 .eventType(MyEventType.FREE_EVENT)
                 .eventCost(eventRequest.getEventCost())
-                .creatorName(loggedInUser.getFirstName())
                 .status(EventStatus.ONGOING)
                 .location(eventRequest.getLocation())
                 .build();
@@ -59,6 +78,7 @@ public class EventService {
         MyEvent savedEvent = eventRepository.save(event);
         return mapper.toEvent(savedEvent);
     }
+
 
 
 
