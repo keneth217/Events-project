@@ -21,7 +21,7 @@ public class EventController {
         return  ResponseEntity.ok("hello spring user");
     }
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest  eventRequest){
+    public ResponseEntity<EventResponse> createEvent(@ModelAttribute  EventRequest  eventRequest){
         return ResponseEntity.ok(service.createEvent(eventRequest));
     }
     @GetMapping
