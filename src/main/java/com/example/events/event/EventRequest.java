@@ -2,6 +2,7 @@ package com.example.events.event;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,6 +21,8 @@ public class EventRequest {
     private LocalTime startTime;
     private LocalTime endTime;
     private int soldOUt;
+    private MultipartFile eventImage;
+
     private String creatorName;
     private BigDecimal eventCost;
 }
