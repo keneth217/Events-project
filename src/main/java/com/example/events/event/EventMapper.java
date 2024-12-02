@@ -17,6 +17,7 @@ public class EventMapper {
                 .endTime(event.getEndTime())
                 .creatorName(event.getCreatorName())
                 .eventCost(event.getEventCost())
+                .eventImage(event.getEventImage())
                 .location(event.getLocation())
                 .status(event.getStatus())
                 .build();
