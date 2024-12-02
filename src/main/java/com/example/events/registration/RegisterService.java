@@ -13,6 +13,9 @@ import com.example.events.exceptions.EventAlreadyScannedException;
 import com.example.events.exceptions.EventNotFoundException;
 
 import com.example.events.exceptions.EventSoldOutException;
+import com.example.events.payments.Payment;
+import com.example.events.payments.PaymentRequest;
+import com.example.events.payments.PaystackService;
 import com.example.events.user.MyRegisteredEventsResponse;
 import com.example.events.user.User;
 import com.example.events.user.UserRepository;
@@ -51,6 +54,7 @@ public class RegisterService {
     private final RegisterMapper registermapper;
     private final RegistrationRepository registrationRepository;
     private final EmailService emailService;
+    private final PaystackService paystackService;
 
     private final JavaMailSender javaMailSender;
 
@@ -68,75 +72,79 @@ public class RegisterService {
         return getLoggedInUser(); // Directly return the logged-in user
     }
 
-    public TicketResponse registerForEvent(RegisterRequest request) {
+    public TicketResponse registerForEvent(RegisterRequest request) throws Exception {
         // Get the logged-in user
         User loggedInUser = getLoggedInUser();
 
         // Fetch user by ID
         User user = userRepository.findById(loggedInUser.getId())
-                .orElseThrow(() -> new EventNotFoundException("User not found with the given ID: " + request.getUserId()));
+                .orElseThrow(() -> new EventNotFoundException("User not found with ID: " + request.getUserId()));
 
         // Fetch event by ID
         MyEvent event = eventRepository.findById(request.getEventId())
-                .orElseThrow(() -> new EventNotFoundException("Event not found with the given ID: " + request.getEventId()));
+                .orElseThrow(() -> new EventNotFoundException("Event not found with ID: " + request.getEventId()));
 
-        // Check if the user is already registered for the event
-        boolean alreadyRegistered = registrationRepository.existsByUserAndEvent(loggedInUser, event);
-        if (alreadyRegistered) {
+        // Check if user is already registered
+        if (registrationRepository.existsByUserAndEvent(loggedInUser, event)) {
             throw new AlreadyRegisteredToEventException("You have already registered for this event.");
         }
 
-        // Check the event type and registration limits
+        // Check sold-out condition
         if (event.getEventType() == MyEventType.SOLD_OUT_EVENT) {
-            // If it's a sold-out event, check the number of registered attendees
-            int totalRegisteredAttendees = registrationRepository.countByEvent(event);
-
-            // Assuming the event has a field for max attendees or capacity (soldOut limit)
-            if (totalRegisteredAttendees >= event.getSoldOUt()) {
-                throw new EventSoldOutException("The event is sold out. No more registrations are allowed.");
+            int totalRegistered = registrationRepository.countByEvent(event);
+            if (totalRegistered >= event.getSoldOUt()) {
+                throw new EventSoldOutException("This event is sold out.");
             }
         }
+
+        // Calculate cost
         BigDecimal cost = event.getEventCost().multiply(BigDecimal.valueOf(request.getTicketQuantity()));
 
-        // Create a new EventRegistration (without the QR code yet)
+        // Initialize Event Registration
         EventRegistration eventRegistration = EventRegistration.builder()
                 .regDate(request.getRegDate())
                 .regTime(request.getRegTime())
                 .user(loggedInUser)
                 .event(event)
                 .ticketQuantity(request.getTicketQuantity())
-                .paidAmount(BigDecimal.valueOf(0.0))
+                .paidAmount(BigDecimal.ZERO)
                 .eventCost(cost)
-
-                .transactionId(UUID.randomUUID().toString()) // Generate a unique transaction ID
-                .ticketQuantity(request.getTicketQuantity())
-                .scanned(false) // Initial value, will be marked true upon scan
+                .transactionId(null)
+                .scanned(false)
                 .status(RegStatus.PENDING)
                 .build();
 
-        // Save the event registration to generate a registration ID
-        EventRegistration registeredEvent = registrationRepository.save(eventRegistration);
+//        // Initialize payment via Paystack
+//        PaymentRequest paymentRequest = PaymentRequest.builder()
+//                .email(loggedInUser.getEmail())
+//                .amount(request.getAmount())
+//                .build();
+//
+//        paystackService.initializeTransaction(paymentRequest);
 
-        // Now that the registration is saved, generate QR code content with numbering and line breaks
-        String qrCodeContent = "1. Registration ID: " + registeredEvent.getRegistrationId() + "\n" +
-                "2. User: " + loggedInUser.getFirstName()+"," +" Tickets: " + request.getTicketQuantity()+ "\n" +
-                "3. Paid: " + request.getPaidAmount()+ "\n" +
-                "4. Event: " + event.getEventName();
+        // Save registration to generate registration ID
+        EventRegistration savedRegistration = registrationRepository.save(eventRegistration);
 
+        // Generate QR code
+        String qrCodeContent = "1. Registration ID: " + savedRegistration.getRegistrationId() + "\n" +
+                "2. User: " + loggedInUser.getFirstName() + "\n" +
+                "3. Tickets: " + request.getTicketQuantity() + "\n" +
+                "4. Event: " + event.getEventName() + "\n" +
+                "5. Paid: " + savedRegistration.getPaidAmount();
 
-        // Generate QR code as a Base64 string
         String qrCodeBase64 = registermapper.generateQRCodeAsBase64(qrCodeContent, 300, 300);
 
-        // Send email with the embedded QR code (with registration ID)
+        // Send email with QR code
         registermapper.sendEmailAlertWithAttachmentQRCode(loggedInUser.getEmail(), event, qrCodeBase64);
 
-        // Update the EventRegistration with the QR code (Base64 string)
-        registeredEvent.setUniqueCode(qrCodeBase64);
-        registrationRepository.save(registeredEvent); // Save with updated QR code
+        // Update registration with QR code
+        savedRegistration.setUniqueCode(qrCodeBase64);
+        registrationRepository.save(savedRegistration);
 
-        // Convert to response and return
-        return registermapper.mapToTicketResponse(registeredEvent);
+        // Map to response and return
+        return registermapper.mapToTicketResponse(savedRegistration);
     }
+
     public AttendeesResponse getAllAttendeesForEvent(UUID eventId) {
         // Fetch event by ID
         MyEvent event = eventRepository.findById(eventId)
