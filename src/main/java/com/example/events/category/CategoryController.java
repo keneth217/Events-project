@@ -34,6 +34,8 @@ public class CategoryController {
         }
         return ResponseEntity.ok(allCategories);
     }
+
+
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> getEvent(@PathVariable UUID categoryId) {
         var category = categoryService.getCategoryById(categoryId);
