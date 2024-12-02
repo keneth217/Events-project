@@ -18,4 +18,5 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
     // Repository method for fetching successful payments for a given transaction ID
     List<Payment> findByTicket_RegistrationIdAndStatus(UUID registrationId, String status);
 
+    List<Payment> findByReferenceAndStatus(String reference, String success);
 }
