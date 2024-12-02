@@ -30,9 +30,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     Map<String,String> validationErrors=new HashMap<>();
         List<ObjectError> validationErrorlist=ex.getBindingResult().getAllErrors();
         validationErrorlist.forEach((error)->{
-            String fielName=((FieldError)error).getField();
-            String validationmessage= error.getDefaultMessage();
-            validationErrors.put(fielName,validationmessage);
+            String fieldName=((FieldError)error).getField();
+            String validationMessage= error.getDefaultMessage();
+            validationErrors.put(fieldName,validationMessage);
         });
         return  new ResponseEntity<>(validationErrors,HttpStatus.BAD_REQUEST);
     }
@@ -76,6 +76,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EventAlreadyScannedException.class)
     public ResponseEntity<ErrorResponseDto> handleEventAlreadyScannedException(EventAlreadyScannedException exception, WebRequest webRequest){
+        ErrorResponseDto errorResponseDto=new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(), LocalDateTime.now()
+        );
+        return  new ResponseEntity<>(errorResponseDto,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PayStackException.class)
+    public ResponseEntity<ErrorResponseDto> handlePayStackException(PayStackException exception, WebRequest webRequest){
         ErrorResponseDto errorResponseDto=new ErrorResponseDto(
                 webRequest.getDescription(false),
                 HttpStatus.BAD_REQUEST,
