@@ -27,8 +27,11 @@ spring:
           ssl:
             enable: true
 
-    servlet:
-      multipart:
-        max-file-size: 10MB
-        max-request-size: 10MB
-        enabled: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+      enabled: true
+  paystack:
+    secret:
+      key: sk_test_ec3147f18602fedb4a2a22a50c25841c99ea88b1
