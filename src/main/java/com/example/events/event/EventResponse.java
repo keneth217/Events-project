@@ -25,4 +25,6 @@ public class EventResponse {
     private String creatorName;
     private BigDecimal eventCost;
     private int soldOUt;
+
+    private byte[] eventImage;
 }
