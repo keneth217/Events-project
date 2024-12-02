@@ -41,7 +41,7 @@ public class PaystackService {
         // Fetch the event registration details
         EventRegistration registration = registrationRepository.findById(ticketId)
                 .orElseThrow(() -> new PayStackException("Ticket not found for the payment you want to make"));
-
+        System.out.println("TRANSACTION ID:::::::::::::::::::::::::::::::::::::"+ticketId);
         // Paystack API URL and callback
         String url = "https://api.paystack.co/transaction/initialize";
         String callBackUrl = "https://payment-sm-front.vercel.app/payment/callback";
@@ -136,14 +136,15 @@ public class PaystackService {
     // Update Payment Status
     @Transactional
     public void updatePayment(String reference, String status, String paidAt,
-                              String channel, String createdAt, String currency, String ipAddress, UUID transactionId) throws PayStackException {
+                              String channel, String createdAt, String currency,
+                              String ipAddress) throws PayStackException {
         try {
             // Fetch payment and registration using Optional to avoid null checks
             Payment payment = Optional.ofNullable(paymentRepository.findByReference(reference))
                     .orElseThrow(() -> new PayStackException("Payment not found for reference: " + reference));
 
-            EventRegistration registration = Optional.ofNullable(registrationRepository.findByTransactionId(String.valueOf(transactionId)))
-                    .orElseThrow(() -> new PayStackException("Registration not found for transaction: " + transactionId));
+            EventRegistration registration = Optional.ofNullable(registrationRepository.findByTransactionId(reference))
+                    .orElseThrow(() -> new PayStackException("Registration not found for transaction: " + reference));
 
             // Update payment details
             payment.setStatus(status);
@@ -158,22 +159,20 @@ public class PaystackService {
             paymentRepository.save(payment);
 
             // If the payment status is successful, update the total paid amount
-            if ("SUCCESS".equalsIgnoreCase(status)) {
-                // Sum up all successful payments for this registration (transactionId)
-                BigDecimal totalPaidAmount = paymentRepository.findByTicket_RegistrationIdAndStatus(transactionId, "SUCCESS")
+            if ("success".equalsIgnoreCase(status)) {
+                BigDecimal totalPaidAmount = paymentRepository.findByTicket_RegistrationIdAndStatus(registration.getRegistrationId(), "success")
                         .stream()
                         .map(Payment::getAmount)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 // Ensure that the paid amount does not exceed the event cost
                 if (totalPaidAmount.compareTo(registration.getEventCost()) > 0) {
-                    throw new ExcessivePaymentException("Paid amount cannot exceed event cost.");
+                    throw new ExcessivePaymentException("Paid amount cannot exceed the event cost.");
                 }
 
-                // Set the total paid amount
+                // Update registration with the new total and status
                 registration.setPaidAmount(totalPaidAmount);
 
-                // Set payment status based on the paid amount
                 if (totalPaidAmount.compareTo(registration.getEventCost()) == 0) {
                     registration.setPaymentStatus(PaymentStatus.FULLY_PAID);
                 } else if (totalPaidAmount.compareTo(registration.getEventCost()) < 0) {
