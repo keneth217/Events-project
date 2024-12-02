@@ -51,6 +51,7 @@ public class PaystackController {
             @RequestHeader("X-Paystack-Signature") String signature,
             @RequestBody String payload) {
 
+
         try {
             // Validate Paystack Signature
             String computedHash = hmacSHA512(payload, secretKey);
@@ -63,6 +64,7 @@ public class PaystackController {
             Map<String, Object> data = (Map<String, Object>) webhookData.get("data");
             System.out.println("webhook response ::::::::::::::::::::::::::::::::::"+data);
             String reference = (String) data.get("reference");
+
             String status = (String) data.get("status");
             String paid_at = (String) data.get("paid_at");
             String channel = (String) data.get("channel");
@@ -70,7 +72,7 @@ public class PaystackController {
             String currency = (String) data.get("currency");
             String ip_address = (String) data.get("ip_address");
 
-            paystackService.updatePayment(reference, status,paid_at,channel,created_at,currency,ip_address,null);
+            paystackService.updatePayment(reference, status,paid_at,channel,created_at,currency,ip_address);
 
             return ResponseEntity.ok("Webhook processed successfully");
         } catch (Exception e) {
