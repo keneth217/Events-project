@@ -113,8 +113,15 @@ public class RegisterMapper {
                 .userName(registerEvent.getUser().getFirstName())
                 .paidAmount(registerEvent.getPaidAmount())
                 .scanned(registerEvent.isScanned())
+                .ticketQuantity(registerEvent.getTicketQuantity())
                 .regDate(registerEvent.getRegDate())
+                .transactionId(registerEvent.getTransactionId())
+                .remainingAmount(registerEvent.getRemainingAmount())
                 .eventCost(registerEvent.getEventCost())
+                .regTime(registerEvent.getRegTime())
+                .userId(registerEvent.getUser().getId())
+                .scannedDate(registerEvent.getScannedDate())
+                .scannedTime(registerEvent.getScannedTime())
                 .ticketId(registerEvent.getRegistrationId())
                 .build();
     }
