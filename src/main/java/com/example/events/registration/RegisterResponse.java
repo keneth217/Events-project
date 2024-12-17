@@ -21,4 +21,5 @@ public class RegisterResponse {
     private UserResponse users;
     private EventResponse events;
     private RegStatus status;
+
 }
