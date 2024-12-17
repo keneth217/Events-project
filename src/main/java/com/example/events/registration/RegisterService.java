@@ -41,6 +41,8 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -198,6 +200,8 @@ public class RegisterService {
         // Mark as scanned
         registration.setScanned(true);
         registration.setStatus(RegStatus.PUBLISHED);
+        registration.setScannedTime(LocalTime.now());
+        registration.setScannedDate(LocalDate.now());
         registrationRepository.save(registration);
 
         // Return a structured response using ResponseDto
