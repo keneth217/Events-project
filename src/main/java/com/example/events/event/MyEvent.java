@@ -46,9 +46,12 @@ public class MyEvent {
     @Enumerated(EnumType.STRING)
     private MyEventType eventType;
 
+
+
+
     @Lob
     //  @Column(columnDefinition = "BYTEA")
-    @Basic(fetch = FetchType.EAGER)
+    @Basic(fetch = FetchType.LAZY)
     private byte[] eventImage;  // Storing images as byte arrays
 
 
