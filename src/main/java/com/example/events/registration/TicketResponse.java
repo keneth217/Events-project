@@ -25,4 +25,7 @@ public class TicketResponse {
     private BigDecimal paidAmount;
     private BigDecimal eventCost;
     private BigDecimal remainingAmount;
+
+    private LocalDate scannedDate;
+    private LocalTime scannedTime;
 }
