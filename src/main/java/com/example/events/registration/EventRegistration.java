@@ -30,7 +30,8 @@ public class EventRegistration {
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean scanned;
-
+    private LocalDate scannedDate;
+    private LocalTime scannedTime;
     private String transactionId;
     private Long ticketQuantity;
     private Long ticketCount;
