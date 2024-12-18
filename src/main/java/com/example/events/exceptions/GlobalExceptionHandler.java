@@ -93,4 +93,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
         return  new ResponseEntity<>(errorResponseDto,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AuthenticationExceptions.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthException(AuthenticationExceptions exception, WebRequest webRequest){
+        ErrorResponseDto errorResponseDto=new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(), LocalDateTime.now()
+        );
+        return  new ResponseEntity<>(errorResponseDto,HttpStatus.BAD_REQUEST);
+    }
 }
