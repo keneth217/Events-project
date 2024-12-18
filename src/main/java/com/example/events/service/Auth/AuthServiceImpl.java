@@ -4,6 +4,9 @@ package com.example.events.service.Auth;
 import com.example.events.dto.AuthenticationRequestDto;
 import com.example.events.dto.JWTAuthenticationResponse;
 import com.example.events.dto.SignUpRequestDto;
+import com.example.events.dto.UserDetailDto;
+import com.example.events.exceptions.AuthenticationExceptions;
+import com.example.events.exceptions.EventNotFoundException;
 import com.example.events.user.User;
 import com.example.events.enums.Role;
 import com.example.events.exceptions.CustomerAlreadyExistException;
@@ -15,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -69,29 +73,45 @@ public class AuthServiceImpl implements  AuthService{
 
 
 
-    public JWTAuthenticationResponse createAuthToken(@RequestBody AuthenticationRequestDto authenticationRequest)
+    public JWTAuthenticationResponse createAuthToken(@RequestBody AuthenticationRequestDto authenticationRequest) {
 
-    {
         try {
+
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authenticationRequest.getEmail(),
-                    authenticationRequest.getPassword()));
-        } catch (RuntimeException e) {
-            throw new RuntimeException("incorrect login credentials");
+                    authenticationRequest.getPassword()
+            ));
+        } catch (AuthenticationExceptions e) {
+            throw new AuthenticationExceptions("Incorrect login credentials");
         }
-        final UserDetails userDetails=userService.userDetailsService()
+
+
+        User user = userRepository.findByEmail(authenticationRequest.getEmail())
+                .orElseThrow(() -> {
+                    System.out.println("Error: User not found for email: " + authenticationRequest.getEmail());
+                    return new EventNotFoundException("User not found or not associated with the specified shop");
+                });
+
+        System.out.println("Success: User found - " + user.getUsername());
+
+
+        final UserDetails userDetails = userService.userDetailsService()
                 .loadUserByUsername(authenticationRequest.getEmail());
-        Optional<User> optionalUser=userRepository.findByEmail(authenticationRequest.getEmail());
-        final String jwt= jwtUtils.generateToken(userDetails.getUsername());
 
-        JWTAuthenticationResponse authenticationResponse= new JWTAuthenticationResponse();
-        if (optionalUser.isPresent()){
+        // Generate JWT token
+        final String jwt = jwtUtils.generateToken(userDetails.getUsername());
 
-            authenticationResponse.setToken(jwt);
-        }
-        return authenticationResponse;
+
+        return JWTAuthenticationResponse.builder()
+                .token(jwt)
+                .refreshToken(null)
+                .user(UserDetailDto.builder()
+                        .email(user.getEmail())
+                        .firstName(user.getFirstName())
+                        .role(user.getRole())
+                        .lastName(user.getLastName())
+                        .build())
+                .build();
     }
-
-
 
 }
