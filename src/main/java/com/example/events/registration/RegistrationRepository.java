@@ -21,4 +21,6 @@ public interface RegistrationRepository extends JpaRepository<EventRegistration,
     List<EventRegistration> findByUser(User user);
 
     Optional<EventRegistration> findByUniqueCode(String qrCodeContent);
+
+    Optional<EventRegistration> findByUserId(User user);
 }
