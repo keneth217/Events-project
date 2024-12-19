@@ -27,6 +27,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
@@ -214,4 +215,18 @@ public class RegisterService {
                 .orElseThrow(() -> new EventNotFoundException("Ticket not found for the given Event."));
         return registermapper.mapToTicketResponse(registration);
     }
+    // Fetch tickets of the logged-in user
+    @Transactional
+    public List<TicketResponse> getMyTickets() {
+        User loggedInUser = getLoggedInUser();
+        User user = userRepository.findUserWithRegistrations(loggedInUser.getId())
+                .orElseThrow(() -> new EventNotFoundException("User not found"));
+
+        List<EventRegistration> registrations = user.getRegistrations();
+        return registrations.stream()
+                .map(registermapper::mapToTicketResponse)
+                .collect(Collectors.toList());
+    }
+
+
 }
