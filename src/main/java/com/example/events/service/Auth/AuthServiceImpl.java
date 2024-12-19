@@ -99,13 +99,15 @@ public class AuthServiceImpl implements  AuthService{
                 .loadUserByUsername(authenticationRequest.getEmail());
 
         // Generate JWT token
-        final String jwt = jwtUtils.generateToken(userDetails.getUsername());
+        final String    token = jwtUtils.generateToken(userDetails.getUsername());
+        final String  refreshToken= jwtUtils.generateRefreshToken(userDetails.getUsername());
 
 
         return JWTAuthenticationResponse.builder()
-                .token(jwt)
-                .refreshToken(null)
+                .token(token)
+                .refreshToken(refreshToken)
                 .user(UserDetailDto.builder()
+                        .id(user.getId())
                         .email(user.getEmail())
                         .firstName(user.getFirstName())
                         .role(user.getRole())
