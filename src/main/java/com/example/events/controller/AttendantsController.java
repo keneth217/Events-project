@@ -3,6 +3,7 @@ package com.example.events.controller;
 import com.example.events.configs.RateLimitingService;
 import com.example.events.event.EventResponse;
 import com.example.events.event.EventService;
+import com.example.events.exceptions.EventNotFoundException;
 import com.example.events.registration.RegisterRequest;
 import com.example.events.registration.RegisterResponse;
 import com.example.events.registration.RegisterService;
@@ -69,4 +70,16 @@ public class AttendantsController {
         }
         return ResponseEntity.ok(attendants);
     }
+
+    @GetMapping("/tickets")
+    public ResponseEntity<List<TicketResponse>> myTickets() {
+        try {
+            List<TicketResponse> tickets = registerService.getMyTickets();
+            return ResponseEntity.ok(tickets); // Return 200 OK with ticket details
+        } catch (EventNotFoundException e) {
+            return ResponseEntity.noContent().build(); // Return 204 No Content if no tickets found
+        }
+    }
+
+
 }
