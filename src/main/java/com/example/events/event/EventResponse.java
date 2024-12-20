@@ -21,7 +21,7 @@ public class EventResponse {
     private LocalTime startTime;
     private LocalTime endTime;
     private EventStatus status;
-
+    private String   categoryName;
     private String creatorName;
     private BigDecimal eventCost;
     private int soldOUt;
