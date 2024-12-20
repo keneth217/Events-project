@@ -7,12 +7,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class CategoryRequest {
-
-
     private UUID id;
     private String categoryName;
     private String categoryDescription;
-
-
-
 }
