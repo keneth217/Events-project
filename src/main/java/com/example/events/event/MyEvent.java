@@ -50,8 +50,9 @@ public class MyEvent {
 
 
     @Lob
-    //  @Column(columnDefinition = "BYTEA")
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(fetch = FetchType.EAGER)
+//    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "event_image", columnDefinition = "BLOB")
     private byte[] eventImage;  // Storing images as byte arrays
 
 
@@ -64,5 +65,10 @@ public class MyEvent {
     @OneToMany(mappedBy = "event")
     private List<EventRegistration> registrations;
 
-
+    @PostLoad
+    private void materializeEventImage() {
+        if (this.eventImage != null) {
+            this.eventImage = this.eventImage.clone(); // Ensure the stream is materialized
+        }
+    }
 }
