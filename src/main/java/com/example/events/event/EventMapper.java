@@ -13,6 +13,7 @@ public class EventMapper {
                 .categoryId(event.getCategory().getId())
                 .startDate(event.getStartDate())
                 .endDate(event.getEndDate())
+                .categoryName(event.getCategory().getCategoryName())
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
                 .creatorName(event.getCreatorName())
