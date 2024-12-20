@@ -151,4 +151,13 @@ public class EventService {
                 .map(mapper::toEvent)
                 .collect(Collectors.toList());
     }
+
+    public List<EventResponse> upcomingEvents() {
+        LocalDate currentDate = LocalDate.now();
+        List<MyEvent> events = eventRepository.findByStartDateAfterOrderByStartDateAsc(currentDate);
+        return events.stream()
+                .limit(5) // Get only the next 5 upcoming events
+                .map(mapper::toEvent)
+                .collect(Collectors.toList());
+    }
 }
